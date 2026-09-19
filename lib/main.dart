@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/di/injection.dart';
+import 'features/auth/presentation/bloc/auth_cubit.dart';
+import 'features/auth/presentation/pages/login_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,10 +18,13 @@ class TailoredEatsApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Tailored Eats',
-      home: const Scaffold(body: Center(child: Text('Tailored Eats'))),
+    return MultiBlocProvider(
+      providers: [BlocProvider<AuthCubit>(create: (_) => sl<AuthCubit>())],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Tailored Eats',
+        home: const LoginPage(),
+      ),
     );
   }
 }

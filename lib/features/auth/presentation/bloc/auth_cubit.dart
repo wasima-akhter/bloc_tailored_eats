@@ -20,6 +20,8 @@ class AuthCubit extends Cubit<AuthState> {
   final ResetPassword resetPassword;
   final SecureStorage secureStorage;
 
+  String? forgotPasswordActivationToken;
+
   AuthCubit({
     required this.login,
     required this.register,
@@ -126,6 +128,8 @@ class AuthCubit extends Cubit<AuthState> {
     try {
       final result = await checkForgotPasswordOtp(email: email, otp: otp);
 
+      forgotPasswordActivationToken = result.$2;
+
       emit(AuthSuccess(message: result.$2));
     } catch (e) {
       emit(AuthFailure(message: e.toString()));
@@ -145,6 +149,7 @@ class AuthCubit extends Cubit<AuthState> {
         newPassword: newPassword,
         confirmPassword: confirmPassword,
       );
+      forgotPasswordActivationToken = null;
 
       emit(const AuthSuccess(message: 'Password reset successfully.'));
     } catch (e) {
