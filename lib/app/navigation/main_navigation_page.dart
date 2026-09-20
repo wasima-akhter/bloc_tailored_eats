@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../../features/goals/presentation/pages/goals_page.dart';
+import '../../features/home/presentation/pages/home_page.dart';
+import '../../features/nutrition/presentation/pages/nutrition_page.dart';
+
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
 
@@ -11,11 +15,13 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
   int _currentIndex = 0;
 
   final List<Widget> _pages = const [
-    _PlaceholderPage(title: 'Home'),
-    _PlaceholderPage(title: 'Nutrition'),
-    _PlaceholderPage(title: 'Goals'),
-    _PlaceholderPage(title: 'Friends'),
-    _PlaceholderPage(title: 'Profile'),
+    HomePage(),
+    NutritionPage(),
+    GoalsPage(),
+    Placeholder(child: Text("Friends")),
+    Placeholder(child: Text("Profile")),
+    // FriendsPage(),
+    // ProfilePage(),
   ];
 
   @override
@@ -56,22 +62,6 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
             label: 'Profile',
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _PlaceholderPage extends StatelessWidget {
-  const _PlaceholderPage({required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        title,
-        style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
       ),
     );
   }
