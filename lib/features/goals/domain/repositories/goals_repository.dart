@@ -2,6 +2,7 @@ import '../entities/goal.dart';
 
 abstract class GoalsRepository {
   Future<Goal> createGoal({
+    required String userId,
     required String title,
     required String description,
     required String type,

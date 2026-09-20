@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 
 import '../constants/app_constants.dart';
 import '../storage/secure_storage.dart';
@@ -29,6 +30,20 @@ class ApiClient {
           }
 
           handler.next(options);
+        },
+      ),
+    );
+
+    _dio.interceptors.add(
+      LogInterceptor(
+        request: true,
+        requestHeader: true,
+        requestBody: true,
+        responseHeader: true,
+        responseBody: true,
+        error: true,
+        logPrint: (object) {
+          debugPrint('🔥 DIO LOG: $object');
         },
       ),
     );

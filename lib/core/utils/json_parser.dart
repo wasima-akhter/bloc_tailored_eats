@@ -12,7 +12,7 @@ class JsonParser {
       fallback: fallback,
       parser: () {
         if (value == null) {
-          throw const FormatException('Value is null');
+          return fallback;
         }
 
         if (value is String) {
@@ -25,15 +25,15 @@ class JsonParser {
   }
 
   static int integer(dynamic value, {int fallback = 0, String? field}) {
+    if (value == null) {
+      return fallback;
+    }
+
     return _parse(
       value: value,
       field: field,
       fallback: fallback,
       parser: () {
-        if (value == null) {
-          throw const FormatException('Value is null');
-        }
-
         if (value is int) {
           return value;
         }
@@ -58,7 +58,7 @@ class JsonParser {
       fallback: fallback,
       parser: () {
         if (value == null) {
-          throw const FormatException('Value is null');
+          return fallback;
         }
 
         if (value is double) {
@@ -85,9 +85,8 @@ class JsonParser {
       fallback: fallback,
       parser: () {
         if (value == null) {
-          throw const FormatException('Value is null');
+          return fallback;
         }
-
         if (value is bool) {
           return value;
         }
@@ -122,7 +121,7 @@ class JsonParser {
       fallback: fallback,
       parser: () {
         if (value == null) {
-          throw const FormatException('Value is null');
+          return fallback;
         }
 
         if (value is DateTime) {
@@ -150,7 +149,7 @@ class JsonParser {
       fallback: fallback,
       parser: () {
         if (value == null) {
-          throw const FormatException('Value is null');
+          return fallback;
         }
 
         if (value is! List) {
@@ -177,7 +176,7 @@ class JsonParser {
       fallback: fallback,
       parser: () {
         if (value == null) {
-          throw const FormatException('Value is null');
+          return fallback;
         }
 
         if (value is Map<String, dynamic>) {
@@ -217,42 +216,45 @@ class JsonParser {
     }
   }
 }
-// class JsonParser {
-//   JsonParser._();
 
-//   static String string(dynamic value, {String fallback = ''}) {
-//     if (value == null) return fallback;
+/*
+class JsonParser {
+  JsonParser._();
 
-//     if (value is String) {
-//       return value;
-//     }
+  static String string(dynamic value, {String fallback = ''}) {
+    if (value == null) return fallback;
 
-//     return value.toString();
-//   }
+    if (value is String) {
+      return value;
+    }
 
-//   static int integer(dynamic value, {int fallback = 0}) {
-//     if (value == null) return fallback;
+    return value.toString();
+  }
 
-//     if (value is int) return value;
+  static int integer(dynamic value, {int fallback = 0}) {
+    if (value == null) return fallback;
 
-//     return int.tryParse(value.toString()) ?? fallback;
-//   }
+    if (value is int) return value;
 
-//   static double decimal(dynamic value, {double fallback = 0}) {
-//     if (value == null) return fallback;
+    return int.tryParse(value.toString()) ?? fallback;
+  }
 
-//     if (value is num) {
-//       return value.toDouble();
-//     }
+  static double decimal(dynamic value, {double fallback = 0}) {
+    if (value == null) return fallback;
 
-//     return double.tryParse(value.toString()) ?? fallback;
-//   }
+    if (value is num) {
+      return value.toDouble();
+    }
 
-//   static bool boolean(dynamic value, {bool fallback = false}) {
-//     if (value == null) return fallback;
+    return double.tryParse(value.toString()) ?? fallback;
+  }
 
-//     if (value is bool) return value;
+  static bool boolean(dynamic value, {bool fallback = false}) {
+    if (value == null) return fallback;
 
-//     return value.toString().toLowerCase() == 'true';
-//   }
-// }
+    if (value is bool) return value;
+
+    return value.toString().toLowerCase() == 'true';
+  }
+}
+*/

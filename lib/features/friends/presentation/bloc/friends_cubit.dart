@@ -88,9 +88,9 @@ class FriendsCubit extends Cubit<FriendsState> {
     }
   }
 
-  Future<void> sendFriendRequest({required String userId}) async {
+  Future<void> sendFriendRequest({required String friendId}) async {
     await _performAction(() async {
-      await addFriend(userId: userId);
+      await addFriend(friendId: friendId);
     });
   }
 

@@ -8,7 +8,7 @@ abstract class FriendsRepository {
     int limit,
   });
 
-  Future<void> addFriend({required String userId});
+  Future<void> addFriend({required String friendId});
 
   Future<List<Friend>> searchFriend({required String searchName});
 

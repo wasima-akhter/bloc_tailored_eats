@@ -10,7 +10,7 @@ abstract class FriendsRemoteDataSource {
     int limit,
   });
 
-  Future<void> addFriend({required String userId});
+  Future<void> addFriend({required String friendId});
 
   Future<List<FriendModel>> searchFriend({required String searchName});
 
@@ -91,8 +91,11 @@ class FriendsRemoteDataSourceImpl implements FriendsRemoteDataSource {
   }
 
   @override
-  Future<void> addFriend({required String userId}) async {
-    await apiClient.dio.post(ApiEndpoints.addFriend, data: {'userId': userId});
+  Future<void> addFriend({required String friendId}) async {
+    await apiClient.dio.post(
+      ApiEndpoints.addFriend,
+      data: {'receiverId': friendId},
+    );
   }
 
   @override
@@ -127,7 +130,7 @@ class FriendsRemoteDataSourceImpl implements FriendsRemoteDataSource {
   Future<void> acceptFriendRequest({required String requestId}) async {
     await apiClient.dio.patch(
       ApiEndpoints.acceptRequest,
-      data: {'requestId': requestId},
+      data: {'friendId': requestId},
     );
   }
 

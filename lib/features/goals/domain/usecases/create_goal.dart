@@ -7,12 +7,14 @@ class CreateGoal {
   const CreateGoal(this.repository);
 
   Future<Goal> call({
+    required String userId,
     required String title,
     required String description,
     required String type,
     required String dueDate,
   }) {
     return repository.createGoal(
+      userId: userId,
       title: title,
       description: description,
       type: type,

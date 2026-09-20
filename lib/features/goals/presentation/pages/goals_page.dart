@@ -4,6 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/injection.dart';
 import '../../../../core/widgets/app_error_widget.dart';
 import '../../../../core/widgets/app_loader.dart';
+import '../../../profile/presentation/bloc/profile_cubit.dart';
+import '../../../profile/presentation/bloc/profile_state.dart';
 import '../../domain/entities/goal.dart';
 import '../bloc/goals_cubit.dart';
 import '../bloc/goals_state.dart';
@@ -13,8 +15,13 @@ class GoalsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (_) => sl<GoalsCubit>()..loadGoals(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<GoalsCubit>(create: (_) => sl<GoalsCubit>()..loadGoals()),
+        BlocProvider<ProfileCubit>(
+          create: (_) => sl<ProfileCubit>()..loadProfile(),
+        ),
+      ],
       child: const _GoalsView(),
     );
   }
@@ -67,7 +74,8 @@ class _GoalsView extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 children: [
                   Text(
-                    'Completed: ${percentage.toStringAsFixed(0)}%',
+                    'Completed: '
+                    '${percentage.toStringAsFixed(0)}%',
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -114,72 +122,141 @@ class _GoalsView extends StatelessWidget {
   }
 
   void _showCreateGoalDialog(BuildContext context) {
-    final titleController = TextEditingController();
-    final descriptionController = TextEditingController();
-    final typeController = TextEditingController();
-    final dueDateController = TextEditingController();
+    final profileState = context.read<ProfileCubit>().state;
+
+    if (profileState is! ProfileLoaded) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('User profile is still loading.')),
+      );
+      return;
+    }
+
+    final userId = profileState.profile.id;
 
     showDialog<void>(
       context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          title: const Text('Create Goal'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: titleController,
-                  decoration: const InputDecoration(labelText: 'Title'),
-                ),
-                TextField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                ),
-                TextField(
-                  controller: typeController,
-                  decoration: const InputDecoration(labelText: 'Type'),
-                ),
-                TextField(
-                  controller: dueDateController,
-                  decoration: const InputDecoration(labelText: 'Due Date'),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(dialogContext);
-              },
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (titleController.text.trim().isEmpty) {
-                  return;
-                }
+      builder: (_) => _CreateGoalDialog(
+        userId: userId,
+        onCreate:
+            ({
+              required userId,
+              required title,
+              required description,
+              required type,
+              required dueDate,
+            }) {
+              context.read<GoalsCubit>().createNewGoal(
+                userId: userId,
+                title: title,
+                description: description,
+                type: type,
+                dueDate: dueDate,
+              );
+            },
+      ),
+    );
+  }
+}
 
-                Navigator.pop(dialogContext);
+class _CreateGoalDialog extends StatefulWidget {
+  const _CreateGoalDialog({required this.userId, required this.onCreate});
 
-                context.read<GoalsCubit>().createNewGoal(
-                  title: titleController.text.trim(),
-                  description: descriptionController.text.trim(),
-                  type: typeController.text.trim(),
-                  dueDate: dueDateController.text.trim(),
-                );
-              },
-              child: const Text('Create'),
+  final String userId;
+
+  final void Function({
+    required String userId,
+    required String title,
+    required String description,
+    required String type,
+    required String dueDate,
+  })
+  onCreate;
+
+  @override
+  State<_CreateGoalDialog> createState() => _CreateGoalDialogState();
+}
+
+class _CreateGoalDialogState extends State<_CreateGoalDialog> {
+  late final TextEditingController titleController;
+  late final TextEditingController descriptionController;
+  late final TextEditingController typeController;
+  late final TextEditingController dueDateController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    titleController = TextEditingController();
+    descriptionController = TextEditingController();
+    typeController = TextEditingController();
+    dueDateController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    typeController.dispose();
+    dueDateController.dispose();
+
+    super.dispose();
+  }
+
+  void _createGoal() {
+    final title = titleController.text.trim();
+
+    if (title.isEmpty) {
+      return;
+    }
+
+    widget.onCreate(
+      userId: widget.userId,
+      title: title,
+      description: descriptionController.text.trim(),
+      type: typeController.text.trim(),
+      dueDate: dueDateController.text.trim(),
+    );
+
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Create Goal'),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(
+              controller: titleController,
+              decoration: const InputDecoration(labelText: 'Title'),
+            ),
+            TextField(
+              controller: descriptionController,
+              decoration: const InputDecoration(labelText: 'Description'),
+            ),
+            TextField(
+              controller: typeController,
+              decoration: const InputDecoration(labelText: 'Type'),
+            ),
+            TextField(
+              controller: dueDateController,
+              decoration: const InputDecoration(labelText: 'Due Date'),
             ),
           ],
-        );
-      },
-    ).then((_) {
-      titleController.dispose();
-      descriptionController.dispose();
-      typeController.dispose();
-      dueDateController.dispose();
-    });
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(onPressed: _createGoal, child: const Text('Create')),
+      ],
+    );
   }
 }
 

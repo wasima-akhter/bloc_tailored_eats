@@ -4,6 +4,7 @@ import '../models/goal_model.dart';
 
 abstract class GoalsRemoteDataSource {
   Future<GoalModel> createGoal({
+    required String userId,
     required String title,
     required String description,
     required String type,
@@ -53,6 +54,7 @@ class GoalsRemoteDataSourceImpl implements GoalsRemoteDataSource {
 
   @override
   Future<GoalModel> createGoal({
+    required String userId,
     required String title,
     required String description,
     required String type,
@@ -60,12 +62,7 @@ class GoalsRemoteDataSourceImpl implements GoalsRemoteDataSource {
   }) async {
     final response = await apiClient.dio.post(
       ApiEndpoints.createNewGoal,
-      data: {
-        'title': title,
-        'description': description,
-        'type': type,
-        'dueDate': dueDate,
-      },
+      data: {'userId': userId, 'title': title},
     );
 
     return GoalModel.fromJson(_data(response.data));
