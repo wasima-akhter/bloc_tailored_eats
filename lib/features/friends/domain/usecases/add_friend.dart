@@ -5,7 +5,7 @@ class AddFriend {
 
   const AddFriend(this.repository);
 
-  Future<void> call({required String userId}) {
-    return repository.addFriend(userId: userId);
+  Future<void> call({required String friendId}) {
+    return repository.addFriend(friendId: friendId);
   }
 }

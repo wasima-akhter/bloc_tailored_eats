@@ -22,8 +22,8 @@ class FriendsRepositoryImpl implements FriendsRepository {
   }
 
   @override
-  Future<void> addFriend({required String userId}) {
-    return remoteDataSource.addFriend(userId: userId);
+  Future<void> addFriend({required String friendId}) {
+    return remoteDataSource.addFriend(friendId: friendId);
   }
 
   @override

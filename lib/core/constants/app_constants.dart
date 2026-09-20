@@ -5,4 +5,5 @@ class AppConstants {
 
   static const String apiBaseUrl =
       'https://jpb8m13w-8002.inc1.devtunnels.ms/api/v1';
+  static const String baseUrl = 'https://jpb8m13w-8002.inc1.devtunnels.ms/';
 }

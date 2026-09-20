@@ -50,6 +50,7 @@ class GoalsCubit extends Cubit<GoalsState> {
   }
 
   Future<void> createNewGoal({
+    required String userId,
     required String title,
     required String description,
     required String type,
@@ -57,6 +58,7 @@ class GoalsCubit extends Cubit<GoalsState> {
   }) async {
     await _performAction(() async {
       await createGoal(
+        userId: userId,
         title: title,
         description: description,
         type: type,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../features/friends/presentation/pages/friends_page.dart';
 import '../../features/goals/presentation/pages/goals_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/nutrition/presentation/pages/nutrition_page.dart';
+import '../../features/profile/presentation/pages/profile_page.dart';
 
 class MainNavigationPage extends StatefulWidget {
   const MainNavigationPage({super.key});
@@ -18,10 +20,9 @@ class _MainNavigationPageState extends State<MainNavigationPage> {
     HomePage(),
     NutritionPage(),
     GoalsPage(),
-    Placeholder(child: Text("Friends")),
-    Placeholder(child: Text("Profile")),
-    // FriendsPage(),
-    // ProfilePage(),
+    FriendsPage(),
+
+    ProfilePage(),
   ];
 
   @override

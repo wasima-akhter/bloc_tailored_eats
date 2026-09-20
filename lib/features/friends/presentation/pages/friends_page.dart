@@ -145,7 +145,7 @@ class _FriendsViewState extends State<_FriendsView>
                             ? null
                             : () {
                                 context.read<FriendsCubit>().sendFriendRequest(
-                                  userId: friend.id,
+                                  friendId: friend.id,
                                 );
                               },
                         child: const Text('Add'),

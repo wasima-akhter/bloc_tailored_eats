@@ -30,6 +30,8 @@ import '../../features/friends/domain/usecases/reject_friend_request.dart';
 import '../../features/friends/domain/usecases/search_friend.dart';
 import '../../features/friends/domain/usecases/unfriend.dart';
 import '../../features/friends/presentation/bloc/friends_cubit.dart';
+import '../../features/goals/data/datasources/goals_local_datasource.dart';
+import '../../features/goals/data/datasources/goals_local_datasource_impl.dart';
 import '../../features/goals/data/datasources/goals_remote_datasource.dart';
 import '../../features/goals/data/repositories/goals_repository_impl.dart';
 import '../../features/goals/domain/repositories/goals_repository.dart';
@@ -53,6 +55,14 @@ import '../../features/nutrition/domain/usecases/get_custom_meals.dart';
 import '../../features/nutrition/domain/usecases/mark_meal_as_ate.dart';
 import '../../features/nutrition/domain/usecases/swap_meal.dart';
 import '../../features/nutrition/presentation/bloc/nutrition_cubit.dart';
+import '../../features/profile/data/datasources/profile_remote_datasource.dart';
+import '../../features/profile/data/repositories/profile_repository_impl.dart';
+import '../../features/profile/domain/repositories/profile_repository.dart';
+import '../../features/profile/domain/usecases/complete_profile.dart';
+import '../../features/profile/domain/usecases/get_user_profile.dart';
+import '../../features/profile/domain/usecases/update_profile.dart';
+import '../../features/profile/presentation/bloc/profile_cubit.dart';
+import '../database/app_database.dart';
 import '../network/api_client.dart';
 import '../network/network_info.dart';
 import '../storage/secure_storage.dart';
@@ -203,6 +213,9 @@ Future<void> initDependencies() async {
     ),
   );
 
+  // APPDATABSE --
+  sl.registerLazySingleton<AppDatabase>(() => AppDatabase());
+
   // Goals
 
   /*
@@ -216,9 +229,15 @@ When someone asks me for GoalsRemoteDataSource, give them the registered object.
   sl.registerLazySingleton<GoalsRemoteDataSource>(
     () => GoalsRemoteDataSourceImpl(apiClient: sl<ApiClient>()),
   );
-
+  sl.registerLazySingleton<GoalsLocalDataSource>(
+    () => GoalsLocalDataSourceImpl(database: sl<AppDatabase>()),
+  );
   sl.registerLazySingleton<GoalsRepository>(
-    () => GoalsRepositoryImpl(remoteDataSource: sl<GoalsRemoteDataSource>()),
+    () => GoalsRepositoryImpl(
+      remoteDataSource: sl<GoalsRemoteDataSource>(),
+      localDataSource: sl<GoalsLocalDataSource>(),
+      networkInfo: sl<NetworkInfo>(),
+    ),
   );
 
   //
@@ -305,6 +324,36 @@ When someone asks me for GoalsRemoteDataSource, give them the registered object.
       rejectFriendRequest: sl<RejectFriendRequest>(),
       unfriend: sl<Unfriend>(),
       getAllFriends: sl<GetAllFriends>(),
+    ),
+  );
+
+  // Friends
+  sl.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSourceImpl(apiClient: sl<ApiClient>()),
+  );
+
+  sl.registerLazySingleton<ProfileRepository>(
+    () =>
+        ProfileRepositoryImpl(remoteDataSource: sl<ProfileRemoteDataSource>()),
+  );
+
+  sl.registerLazySingleton<GetUserDetail>(
+    () => GetUserDetail(sl<ProfileRepository>()),
+  );
+
+  sl.registerLazySingleton<CompleteProfile>(
+    () => CompleteProfile(sl<ProfileRepository>()),
+  );
+
+  sl.registerLazySingleton<UpdateProfile>(
+    () => UpdateProfile(sl<ProfileRepository>()),
+  );
+
+  sl.registerFactory<ProfileCubit>(
+    () => ProfileCubit(
+      getUserDetail: sl<GetUserDetail>(),
+      completeProfile: sl<CompleteProfile>(),
+      updateProfile: sl<UpdateProfile>(),
     ),
   );
 }
